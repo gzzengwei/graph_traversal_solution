@@ -1,7 +1,6 @@
 (ns graph-traversal.core-test
   (:require [clojure.test :refer :all]
-            [graph-traversal.core :refer :all]
-            [clojure.pprint :refer [pprint]]))
+            [graph-traversal.core :refer :all]))
 
 (def G {:1 [[:2 1] [:3 2]]
         :2 [[:4 4]]
@@ -41,3 +40,43 @@
     (let [cyclic-graph {:1 [[:2 1]], :2 [[:3 2]], :3 [[:1 3]]}]
       (is (= '(:1 :2 :3) (seq-graph-dfs cyclic-graph :1)))
       (is (= '(:1 :2 :3) (seq-graph-bfs cyclic-graph :1))))))
+
+(deftest random-graph-generation-test
+  (testing "Random graph generation"
+    (let [N 5
+          S 7
+          graph (random-graph-generation N S)]
+      (is (= N (count (keys graph))) 
+          (str "Graph should have " N " nodes, but has " (count (keys graph))))
+      (is (= S (count-edges graph))
+          (str "Graph should have " S " edges, but has " (count-edges graph)))
+      (let [start-node (first (keys graph))
+            visited (set (seq-graph-dfs graph start-node))]
+        (is (= (set (keys graph)) visited) 
+            (str "All nodes should be reachable. Reachable: " visited ", All nodes: " (set (keys graph))))))))
+
+(deftest random-graph-edge-cases-test
+  (testing "Edge cases for random graph generation"
+    (is (thrown? IllegalArgumentException 
+                 (random-graph-generation 1 1)) 
+        "Should throw exception for N < 2")
+    (is (thrown? IllegalArgumentException 
+                 (random-graph-generation 5 3)) 
+        "Should throw exception for S < N-1")
+    (is (thrown? IllegalArgumentException 
+                 (random-graph-generation 5 21)) 
+        "Should throw exception for S > N(N-1)")))
+
+(deftest random-graph-structure-test
+  (testing "Structure of generated graph"
+    (let [graph (random-graph-generation 5 7)]
+      (is (every? keyword? (keys graph)) "All nodes should be keywords")
+      (is (every? vector? (vals graph)) "All node values should be vectors")
+      (is (every? (fn [edges] 
+                    (every? (fn [[node weight]]
+                              (and (keyword? node) 
+                                   (integer? weight)
+                                   (<= 1 weight 10))) 
+                            edges))
+                  (vals graph))
+          "All edges should be [keyword, integer] pairs with weight between 1 and 10"))))
