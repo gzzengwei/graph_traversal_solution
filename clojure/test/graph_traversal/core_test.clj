@@ -91,3 +91,18 @@
       (is (= start (first path)) "Path should start with the start node")
       (is (= end (last path)) "Path should end with the end node"))))
 
+(deftest graph-distance-properties-test
+  (testing "Graph distance properties"
+    (let [graph (make-graph 10 15)
+          first-vertex (first (keys graph))]
+      
+      (let [ecc (eccentricity graph first-vertex)]
+        (is (number? ecc) "Eccentricity should be a number"))
+      
+      (let [rad (radius graph)]
+        (is (number? rad) "Radius should be a number"))
+      
+      (let [diam (diameter graph)]
+        (is (number? diam) "Diameter should be a number"))
+      
+      (is (<= (radius graph) (diameter graph)) "Radius should be less than or equal to diameter"))))

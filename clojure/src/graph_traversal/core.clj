@@ -94,3 +94,19 @@
   "Alias for random-graph-generation function"
   [N S]
   (random-graph-generation N S))
+
+(defn eccentricity
+  "Calculate the eccentricity of a vertex in the graph."
+  [graph vertex]
+  (let [[distances _] (dijkstra graph vertex)]
+    (apply max (remove #(= % Double/POSITIVE_INFINITY) (vals distances)))))
+
+(defn radius
+  "Calculate the radius of the graph."
+  [graph]
+  (apply min (map #(eccentricity graph %) (keys graph))))
+
+(defn diameter
+  "Calculate the diameter of the graph."
+  [graph]
+  (apply max (map #(eccentricity graph %) (keys graph))))
