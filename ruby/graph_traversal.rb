@@ -10,7 +10,7 @@ module GraphTraversal
 
       until frontier.empty?
         v = d.is_a?(Array) ? frontier.pop : frontier.shift
-        neighbors = g[v] || []
+        neighbors = g[v]&.map(&:first) || []
         yielder << v
         (neighbors - explored.to_a).each do |neighbor|
           explored.add(neighbor)

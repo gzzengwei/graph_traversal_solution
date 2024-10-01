@@ -4,9 +4,9 @@ require "set"
 RSpec.describe GraphTraversal do
   let(:g) do
     {
-      "1" => ["2", "3"],
-      "2" => ["4"],
-      "3" => ["4"],
+      "1" => [["2", 1], ["3", 2]],
+      "2" => [["4", 4]],
+      "3" => [["4", 2]],
       "4" => []
     }
   end
@@ -39,7 +39,7 @@ RSpec.describe GraphTraversal do
   end
 
   describe "disconnected graph" do
-    let(:disconnected_graph) { {"1" => ["2"], "3" => ["4"], "5" => []} }
+    let(:disconnected_graph) { {"1" => [["2", 1]], "3" => [["4", 3]], "5" => []} }
 
     it "handles disconnected graphs correctly" do
       expect(described_class.seq_graph_dfs(disconnected_graph, "1").to_a).to eq ["1", "2"]
@@ -50,7 +50,7 @@ RSpec.describe GraphTraversal do
   end
 
   describe "cyclic graph" do
-    let(:cyclic_graph) { {"1" => ["2"], "2" => ["3"], "3" => ["1"]} }
+    let(:cyclic_graph) { {"1" => [["2", 1]], "2" => [["3", 2]], "3" => [["1", 3]]} }
 
     it "handles cyclic graphs correctly" do
       expect(described_class.seq_graph_dfs(cyclic_graph, "1").to_a).to eq ["1", "2", "3"]
