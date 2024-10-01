@@ -1,10 +1,11 @@
 (ns graph-traversal.core-test
   (:require [clojure.test :refer :all]
-            [graph-traversal.core :refer :all]))
+            [graph-traversal.core :refer :all]
+            [clojure.pprint :refer [pprint]]))
 
-(def G {:1 [:2 :3]
-        :2 [:4]
-        :3 [:4]
+(def G {:1 [[:2 1] [:3 2]]
+        :2 [[:4 4]]
+        :3 [[:4 2]]
         :4 []})
 
 (deftest seq-graph-dfs-test
@@ -29,7 +30,7 @@
 
 (deftest disconnected-graph-test
   (testing "Traversal on disconnected graph"
-    (let [disconnected-graph {:1 [:2], :3 [:4], :5 []}]
+    (let [disconnected-graph {:1 [[:2 1]], :3 [[:4 3]], :5 []}]
       (is (= '(:1 :2) (seq-graph-dfs disconnected-graph :1)))
       (is (= '(:1 :2) (seq-graph-bfs disconnected-graph :1)))
       (is (= '(:3 :4) (seq-graph-dfs disconnected-graph :3)))
@@ -37,6 +38,6 @@
 
 (deftest cyclic-graph-test
   (testing "Traversal on cyclic graph"
-    (let [cyclic-graph {:1 [:2], :2 [:3], :3 [:1]}]
+    (let [cyclic-graph {:1 [[:2 1]], :2 [[:3 2]], :3 [[:1 3]]}]
       (is (= '(:1 :2 :3) (seq-graph-dfs cyclic-graph :1)))
       (is (= '(:1 :2 :3) (seq-graph-bfs cyclic-graph :1))))))
