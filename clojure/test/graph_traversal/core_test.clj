@@ -80,3 +80,14 @@
                             edges))
                   (vals graph))
           "All edges should be [keyword, integer] pairs with weight between 1 and 10"))))
+
+(deftest shortest-path-test
+  (testing "Shortest path in a random graph"
+    (let [graph (make-graph 10 15)
+          start (first (keys graph))
+          end (last (keys graph))
+          path (shortest-path graph start end)]
+      (is (not (nil? path)) "A path should exist in a connected graph")
+      (is (= start (first path)) "Path should start with the start node")
+      (is (= end (last path)) "Path should end with the end node"))))
+

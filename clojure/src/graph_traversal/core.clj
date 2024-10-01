@@ -55,3 +55,42 @@
   "Count the total number of edges in the graph"
   [graph]
   (reduce + (map count (vals graph))))
+
+(defn dijkstra
+  "Compute single-source shortest path distances in a weighted graph."
+  [graph source]
+  (loop [distances (assoc (zipmap (keys graph) (repeat Double/POSITIVE_INFINITY)) source 0)
+         predecessors {}
+         pq (priority-map source 0)]
+    (if-let [[v d] (peek pq)]
+      (let [neighbors (get graph v)
+            relaxed (reduce
+                     (fn [[distances predecessors pq] [neighbor weight]]
+                       (let [new-distance (+ d weight)]
+                         (if (< new-distance (get distances neighbor Double/POSITIVE_INFINITY))
+                           [(assoc distances neighbor new-distance)
+                            (assoc predecessors neighbor v)
+                            (assoc pq neighbor new-distance)]
+                           [distances predecessors pq])))
+                     [distances predecessors (pop pq)]
+                     neighbors)]
+        (recur (first relaxed) (second relaxed) (nth relaxed 2)))
+      [distances predecessors])))
+
+(defn shortest-path
+  "Find the shortest path between start and end nodes in the graph."
+  [graph start end]
+  (let [[distances predecessors] (dijkstra graph start)]
+    (if (= (get distances end) Double/POSITIVE_INFINITY)
+      nil  ; No path exists
+      (loop [path (list end)
+             current end]
+        (if (= current start)
+          path
+          (let [predecessor (get predecessors current)]
+            (recur (conj path predecessor) predecessor)))))))
+
+(defn make-graph
+  "Alias for random-graph-generation function"
+  [N S]
+  (random-graph-generation N S))
