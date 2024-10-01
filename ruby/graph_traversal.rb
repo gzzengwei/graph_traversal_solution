@@ -64,4 +64,42 @@ module GraphTraversal
   def self.seq_graph_bfs(g, s)
     seq_graph(Queue.new, g, s)
   end
+
+  def self.shortest_path(graph, start, end_node)
+    distances, predecessors = dijkstra(graph, start)
+    return nil if distances[end_node] == Float::INFINITY
+
+    path = [end_node]
+    current = end_node
+    until current == start
+      current = predecessors[current]
+      path.unshift(current)
+    end
+    path
+  end
+
+  def self.dijkstra(graph, source)
+    distances = graph.keys.map { |k| [k, Float::INFINITY] }.to_h
+    distances[source] = 0
+    predecessors = {}
+    pq = PQueue.new([[source, 0]]) { |a, b| a[1] < b[1] }
+
+    until pq.empty?
+      v, d = pq.pop
+      graph[v]&.each do |neighbor, weight|
+        new_distance = d + weight
+        if new_distance < distances[neighbor]
+          distances[neighbor] = new_distance
+          predecessors[neighbor] = v
+          pq.push([neighbor, new_distance])
+        end
+      end
+    end
+
+    [distances, predecessors]
+  end
+
+  def self.make_graph(n, s)
+    random_graph_generation(n, s)
+  end
 end

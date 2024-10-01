@@ -89,4 +89,17 @@ RSpec.describe GraphTraversal do
       expect(graph.values.flatten(1)).to all(satisfy { |edge| edge.first.is_a?(String) && edge.last.is_a?(Integer) && edge.last.between?(1, 10) })
     end
   end
+
+  describe ".shortest_path" do
+    it "finds the shortest path between two nodes" do
+      graph = described_class.make_graph(10, 15)
+      start = graph.keys.first
+      end_node = graph.keys.last
+      path = described_class.shortest_path(graph, start, end_node)
+
+      expect(path).not_to be_nil
+      expect(path.first).to eq start
+      expect(path.last).to eq end_node
+    end
+  end
 end
