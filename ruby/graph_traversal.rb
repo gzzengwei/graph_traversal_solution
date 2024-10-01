@@ -20,6 +20,43 @@ module GraphTraversal
     end
   end
 
+  def self.random_graph_generation(n, s)
+    min_edges = n - 1
+    max_edges = n * (n - 1)
+
+    raise ArgumentError, "Invalid input: N must be >= 2, and S must be between #{min_edges} and #{max_edges} (inclusive)" if n < 2 || s < min_edges || s > max_edges
+
+    graph = (1..n).map { |i| [i.to_s, []] }.to_h
+    edges_count = 0
+    unvisited = Set.new(graph.keys[1..])
+
+    until edges_count == s
+      source = if unvisited.empty?
+        graph.keys.sample
+      elsif edges_count.zero?
+        graph.keys.first
+      else
+        (graph.keys.to_set - unvisited).to_a.sample
+      end
+
+      target = unvisited.empty? ? (graph.keys - [source]).sample : unvisited.to_a.sample
+      weight = rand(1..10)
+      new_edge = [target, weight]
+
+      unless graph[source].any? { |edge| edge.first == target }
+        graph[source] << new_edge
+        edges_count += 1
+        unvisited.delete(target)
+      end
+    end
+
+    graph
+  end
+
+  def self.count_edges(graph)
+    graph.values.map(&:size).sum
+  end
+
   def self.seq_graph_dfs(g, s)
     seq_graph([], g, s)
   end

@@ -57,4 +57,36 @@ RSpec.describe GraphTraversal do
       expect(described_class.seq_graph_bfs(cyclic_graph, "1").to_a).to eq ["1", "2", "3"]
     end
   end
+
+  describe ".random_graph_generation" do
+    let(:n) { 5 }
+    let(:s) { 7 }
+
+    it "generates a graph with correct number of nodes and edges" do
+      graph = described_class.random_graph_generation(n, s)
+
+      expect(graph.keys.size).to eq n
+      expect(described_class.count_edges(graph)).to eq s
+    end
+
+    it "generates a connected graph" do
+      graph = described_class.random_graph_generation(n, s)
+      start_node = graph.keys.first
+      visited = Set.new(described_class.seq_graph_dfs(graph, start_node))
+      expect(visited).to eq Set.new(graph.keys)
+    end
+
+    it "raises an error for invalid inputs" do
+      expect { described_class.random_graph_generation(1, 1) }.to raise_error(ArgumentError)
+      expect { described_class.random_graph_generation(5, 3) }.to raise_error(ArgumentError)
+      expect { described_class.random_graph_generation(5, 21) }.to raise_error(ArgumentError)
+    end
+
+    it "generates a graph with correct structure" do
+      graph = described_class.random_graph_generation(5, 7)
+      expect(graph.keys).to all(be_a(String))
+      expect(graph.values).to all(be_an(Array))
+      expect(graph.values.flatten(1)).to all(satisfy { |edge| edge.first.is_a?(String) && edge.last.is_a?(Integer) && edge.last.between?(1, 10) })
+    end
+  end
 end
