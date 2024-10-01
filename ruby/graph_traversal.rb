@@ -102,4 +102,17 @@ module GraphTraversal
   def self.make_graph(n, s)
     random_graph_generation(n, s)
   end
+
+  def self.eccentricity(graph, vertex)
+    distances, _ = dijkstra(graph, vertex)
+    distances.values.reject { |d| d == Float::INFINITY }.max
+  end
+
+  def self.radius(graph)
+    graph.keys.map { |v| eccentricity(graph, v) }.min
+  end
+
+  def self.diameter(graph)
+    graph.keys.map { |v| eccentricity(graph, v) }.max
+  end
 end

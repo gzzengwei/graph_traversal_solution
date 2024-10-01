@@ -102,4 +102,33 @@ RSpec.describe GraphTraversal do
       expect(path.last).to eq end_node
     end
   end
+
+  describe "graph distance properties" do
+    let(:graph) { described_class.make_graph(10, 15) }
+    let(:first_vertex) { graph.keys.first }
+
+    it "calculates eccentricity correctly" do
+      ecc = described_class.eccentricity(graph, first_vertex)
+      puts "Eccentricity of #{first_vertex}: #{ecc}"
+      expect(ecc).to be_a(Numeric)
+    end
+
+    it "calculates radius correctly" do
+      rad = described_class.radius(graph)
+      puts "Radius of the graph: #{rad}"
+      expect(rad).to be_a(Numeric)
+    end
+
+    it "calculates diameter correctly" do
+      diam = described_class.diameter(graph)
+      puts "Diameter of the graph: #{diam}"
+      expect(diam).to be_a(Numeric)
+    end
+
+    it "ensures radius is less than or equal to diameter" do
+      rad = described_class.radius(graph)
+      diam = described_class.diameter(graph)
+      expect(rad).to be <= diam
+    end
+  end
 end
